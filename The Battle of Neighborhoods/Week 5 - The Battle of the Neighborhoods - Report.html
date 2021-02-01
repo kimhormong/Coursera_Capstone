@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>IBM Data Science - Capstone Project</title>
+
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      <section>
+      <h1>
+        <a
+          >The Battle of Neighborhoods - Top 10 Restaurants in 8 Boroughs of
+          Toronto by Rating and Likes</a
+        >
+      </h1>
+      </section>
+
+      <section>
+      <h2>Introduction</h2>
+        <p>
+          Toronto is the capital city of the Canadian province of Ontario. Its
+          current area is 630.20 𝑘𝑚2 (243.3 square mile). With a recorded
+          population of 2,731,571 in 2016, it is the most populous city in
+          Canada and the fourth most populous city in North America. Toronto is
+          a prominent centre for music, theatre, motion picture production, and
+          television production, and is home to the headquarters of Canada's
+          major national broadcast networks and media outlets. Its varied
+          cultural institutions, which include numerous museums and galleries,
+          festivals and public events, entertainment districts, national
+          historic sites, and sports activities, attract over 43 million
+          tourists each year.
+          <br /><br />
+          If you're one of those 43 million tourists, you might have many
+          concerns when you visit Toronto. These concerns may include place to
+          go, eat, sleep, shop and so on.
+          <br /><br />
+          This project aims to select top 10 restaurants in 8 boroughs(Downtown
+          Toronto, West Toronto, East Toronto, Central Toronto, North York,
+          Scarborough, East York, Etobicoke) of Toronto based on number of likes
+          and rating restaurants from Foursquare. Foursquare is a local
+          search-and-discovery mobile app developed by Foursquare Labs Inc. It
+          also has web app and API.
+        </p>
+      </section>
+
+      <section>
+      <h2>Data</h2>
+        <p>Data To discover restaurants of concern, following data are used:</p>
+        <ul>
+          <li>
+            Foursquare API : Forsquare API to get the most common restaurants of
+            a given neighbourhood of a borough. It's in json format.
+          </li>
+          <li>
+            Postal Code of Boroughs in Toronto : Postal code of neighbourhoods
+            of a given borough in Toronto. This data can be obtained from
+            wikipedia using Pandas. This data consist of Postal Code, Borough
+            and Neighbourhood. It's in Tabular format.
+          </li>
+          <li>
+            Neighbourhood Latitude and Longitude : Neighbourhood Latitude and
+            Longitude of a given borough. Latitude and Longitude are used to
+            obtain the most common restaurants in a given neighbourhood using
+            Foursquare API. It can be found in Geospatial_Coordinates.csv. It's
+            a csv file
+          </li>
+        </ul>
+      </section>
+
+      <section>
+      <h2>Methodology</h2>
+        <p>
+          The target is to retrieve top 10 restaurants in 8 boroughs of Toronto.
+          That are Downtown Toronto, West Toronto, East Toronto, Central
+          Toronto, North York, Scarborough, East York and Etobicoke.
+        </p>
+
+        <div>
+          <h3>Technology Used</h3>
+          <ul>
+            <li>Numpy: Scientific Computing libray for Python</li>
+            <li>Pandas: Data manipulation and analysis</li>
+            <li>Matplotlib: Visualization</li>
+            <li>requests: API operations</li>
+            <li>Nominatim: Convert location name to Latitude and Longitude</li>
+            <li>folium: Visualize data on map</li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3>Data Extraction</h3>
+        <p>
+          First, I get postal codes in 8 boroughs of Toronto from
+          <a
+            href="https://en.wikipedia.org/wiki/List_of_postal_codes_of_Canada:_M"
+            >wikipedia page</a
+          >
+          using Pandas, and filter out <b>not assigned</b> column value. I use
+          Pandas to read <b>geospatial goordinates</b> of toronto from
+          <b>Geospatial_Coordinates.csv</b>. Then I join the postal codes with
+          geospatial goordinates.
+          <br />
+          <br />
+          <b>Here is what we have so far:</b>
+          <img src="img/toronto nb latlong.PNG" alt="toronto nb latlong" />
+        </p>
+
+        <p>
+          After that, I use Foursquare API to explore venues in each
+          neighbourhood using latitude and longitude with the following
+          endpoind:
+          <code class="highlighter-rouge">
+            https://api.foursquare.com/v2/venues/explore?&client_id={}&client_secret={}&v={}&ll={},{}&radius={}&limit={}</code
+          >.
+          <br />
+          <br />
+          <b>This is what we have get:</b>
+          <img src="img/toronto_venues.PNG" alt="toronto venues" />
+        </p>
+
+        <p>
+          So now, let's filter the data to keep <b>Venue Category</b> that are
+          restaurants.
+          <br />
+          <img src="img/toronto_retaurants.PNG" alt="toronto retaurants" />
+          <br />
+        </p>
+
+        <p>
+          Next, let's use <b>Venue ID</b> for each restaurants to get their
+          details with the following endpoind:
+          <br />
+          <code
+            >https://api.foursquare.com/v2/venues/{}?&client_id={}&client_secret={}&v={}</code
+          >.
+          <br />
+          I choose following column: Venue ID, Address, Phone Number, Likes,
+          Rating, and Tips.
+          <br />
+          <br />
+          <img src="img/restaurants_detail.PNG" alt="restaurants' detail" />
+        </p>
+
+        <p>
+          We have restaurants' detail. Let's merge restaurants with their
+          detail, base on Venue ID, to get information we need for restaurants
+          in each neighbourhood.
+          <br />
+          <img
+            src="img/toronto_restaurants_detail.PNG"
+            alt="toronto Retaurants Detail"
+          />
+        </p>
+
+        <p>
+          Finally, sort all restaurants in descending order and group them base
+          on borough and take top 10 of them.
+          <img src="img/top_10_restaurants.PNG" alt="top 10 restaurants" />
+        </p>
+        </div>
+      </section>
+
+      <section>
+      <h2>Results</h2>
+        <p>
+          There is one thing that is needed to point out. From
+          <b>10 top restaurants</b> above, there are just 65 restaurants. We have 8
+          boroughs, and we are interested top 10 restaurants in each borough. This
+          means that, base on Foursquare API, some boroughs have less than 10
+          restaurants. When visualize results, I decide to call restaurants in
+          boroughs with 10 or more restaurants <b>top 10 restaurants</b>. Beside
+          this, let's just call them <b>top restaurants</b>.
+        </p>
+
+        <p>
+          I start with bar chart. After bar chart, I create a visualization for
+          all top/top 10 restaurants on the map using
+          <b> Name, number of like and rating</b> of a given restaurant as a
+          pop-up.
+        </p>
+
+        <h4>Downtown Toronto</h4>
+        <p>
+          <img src="img/downton_toronto_top10.PNG" alt="Downton Toronto Top10" />
+        </p>
+
+        <h4>West Toronto</h4>
+        <p>
+          <img
+            src="img/westown_top10.PNG"
+            alt="Chicago Geo plot"
+          />
+        </p>
+
+        <h4>East Toronto</h4>
+        <p>
+          <img
+            src="img/easttown_top10.PNG"
+            alt="East Town top10"
+          />
+        </p>
+
+        <h4>Central Toronto</h4>
+        <p>
+          <img
+            src="img/central_toronto_top10.PNG"
+            alt="Central Toronto top10"
+          />
+        </p>
+
+        <h4>North York</h4>
+        <p>
+          <img
+            src="img/north_york_top10.PNG"
+            alt="North York top10"
+          />
+        </p>
+
+        <h4>Scarborough</h4>
+        <p>
+          <img
+            src="img/scarborough_top10.PNG"
+            alt="Scarborough"
+          />
+        </p>
+
+        <h4>East York<h4>
+        <p>
+          <img
+            src="img/east_york_top_restaurants.PNG"
+            alt="East York Top resturants"
+          />
+        </p>
+
+        <h4>Etobicoke<h4>
+        <p>
+          <img
+            src="img/etobicoke_top_restaurants.PNG"
+            alt="Etobicoke Top resturants"
+          />
+        </p>
+
+        <h4>All top/top 10 restaurants on the map<h4>
+        <p>
+          <img
+            src="img/all_top_restaurants.PNG"
+            alt="All top/top 10 restaurants"
+          />
+        </p>
+    </section>
+
+      <h2>Discussion</h2>
+
+      <p>
+        The purpose of this project is to find Top 10 Restauarants in 8 Boroughs of Toronto by Rating and Likes using Foursquare API. For some boroughs, there are less than 10 restaurants. This is a drawback.
+        <br>
+        <br>
+        Toronto itself varies in culture. It attracts millions of people every year. Further analysis should be made.
+        It would be interesting to use different API to explore more.
+        <br>
+        <br>
+        Base on Foursquare API, although it is not complete, this might give us a pretty good idea of restaurants in Toronto and its boroughs. The reason is the data is based on people. 
+      </p>
+
+      <h2>Conclusion</h2>
+
+      <p>
+        Starting by introducing of problem, then describe needed data, walkthrough methodology, get the results,
+        and finally the discussion of whether the project is helpful. I hope this gives help target audiens in deciding of choosing restaurants in each boroughs and Toronto overall.
+      </p>
+      <p>
+        <b>Future Work</b>
+        <ul>
+          <li>Try different API</li>
+          <li>Discover top restaurants in different category (Italian, Japanese...)</li>
+          <li>find out, overall, which borough has better restaurants (Likes and Rating) </li>
+          <li>Examine tip(review) from user</li>
+        </ul>
+      </p>
+
+      <p>
+       
+      </p>
+
+    </div>
+  </body>
+</html>
